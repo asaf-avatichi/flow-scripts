@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: flow-sensor
+  namespace: kube-system
+  labels:
+    app: flow-sensor
+spec:
+  selector:
+    matchLabels:
+      app: flow-sensor
+  template:
+    metadata:
+      labels:
+        app: flow-sensor
+    spec:
+      hostPID: true
+      serviceAccountName: flow
+      containers:
+        - name: sensor
+          image: golang:1.15
+          command: ["sleep"]
+          args: ["10000000"]
+          envFrom:
+          - secretRef:
+              name: flow-sensor
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /lib/modules
+              name: lib-modules
+            - mountPath: /sys
+              name: sys
+            - mountPath: /usr/src
+              name: usr-src
+            - mountPath: /data
+              name: flow-code
+      volumes:
+        - name: lib-modules
+          hostPath:
+            path: /lib/modules
+            type: Directory
+        - name: sys
+          hostPath:
+            path: /sys
+            type: Directory
+        - name: usr-src
+          hostPath:
+            path: /usr/src
+            type: Directory
+        - name: flow-code
+          hostPath:
+            path: /srv/flow
+            type: Directory
