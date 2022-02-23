@@ -2,7 +2,7 @@ sudo apt update
 sudo apt install rsync make docker.io curl gcc vim -y
 
 curl -sfL https://get.k3s.io |  sh -
-curl https://dl.google.com/go/go1.15.linux-amd64.tar.gz -o /tmp/go1.15.linux-amd64.tar.gz && sudo tar -C /usr/local -xzf /tmp/go1.15.linux-amd64.tar.gz
+curl https://dl.google.com/go/go1.16.linux-amd64.tar.gz -o /tmp/go1.16.linux-amd64.tar.gz && sudo tar -C /usr/local -xzf /tmp/go1.16.linux-amd64.tar.gz
 echo "export PATH=$PATH:/usr/local/go/bin" >> ~/.profile
 curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 sudo chmod 777 /etc/rancher/k3s/k3s.yaml
@@ -26,3 +26,28 @@ echo "alias flowhelm='cd ~/flow/sensor/deploy/;helm install flow . --set flowTok
     --set clusterName=\"Avatichi\"\
     -n kube-system'
 alias flowrun=\"kubectl -n nmspc exec  `kubectl get pods -A | grep flow-sensor | awk '{print $2}'` -n=kube-system -- env FLOW_EBPF_PATH=/data/sensor/eBPF/dist/sensor_ebpf.o /data/sensor/sensor\"" >> ~/.bashrc
+
+
+
+# for java 
+sudo apt install unzip
+wget https://services.gradle.org/distributions/gradle-7.3.2-bin.zip -P /tmp
+sudo mkdir /opt/gradle
+sudo unzip -d /opt/gradle /tmp/gradle-7.3.2-bin.zip
+echo "export PATH=$PATH:/opt/gradle/gradle-7.3.2/bin" >> ~/.profile
+
+
+wget https://download.java.net/openjdk/jdk8u41/ri/openjdk-8u41-b04-linux-x64-14_jan_2020.tar.gz -P /tmp
+sudo tar zxvf /tmp/openjdk-8u41-b04-linux-x64-14_jan_2020.tar.gz -C /opt/
+#echo "export PATH=$PATH:/opt/java-se-8u41-ri/bin" >> ~/.profile
+#source ~/.profile
+
+wget https://download.java.net/openjdk/jdk11/ri/openjdk-11+28_linux-x64_bin.tar.gz -P /tmp
+sudo tar zxvf /tmp/openjdk-11+28_linux-x64_bin.tar.gz -C /opt/
+echo "export PATH=$PATH:/opt/jdk-11/bin" >> ~/.profile
+#echo "export JAVA_HOME=/opt/jdk-11" >> ~/.bashrc
+
+
+function janet() {
+    java -jar ~/janet/build/libs/javaflow-0.0.1.jar $1 0 debug
+}

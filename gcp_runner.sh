@@ -4,8 +4,8 @@ key=~/.ssh/google_compute_engine
 
 print_usage() {
   echo "Usage:
-  -i    instance_name [49, 510, 419]
-     optinal flags
+  -i    instance_name [49, 419]
+Optinal flags:
   [-k key ]    key
   f    sync flow repo
   b    build flow sensor
@@ -14,10 +14,10 @@ print_usage() {
   r    run sensor
   t    trace bpf log
   h    print help
-  n    setup new instatnce"
+  j    sensor java build"
 }
 
-while getopts 'i:kfbehrctn' flag; do
+while getopts 'i:kfbehrcjtn' flag; do
   case "${flag}" in
     i) instnace="${OPTARG}" ;;
     k) key="${OPTARG}" ;;
@@ -29,6 +29,7 @@ while getopts 'i:kfbehrctn' flag; do
     r) run=1 ;;
     t) trace=1 ;;
     n) new=1 ;;
+    j) java=1 ;;
     *) print_usage
        exit 1 ;;
   esac
@@ -102,5 +103,11 @@ fi
 if [ ! -z "$trace" ]; then
     pretty_print "Tracing BPF"
     ssh $user@$ip "sudo cat /sys/kernel/debug/tracing/trace_pipe"
+fi
+
+if [ ! -z "$java" ]; then
+    pretty_print "Java"
+    rsync -avze "ssh -i $key" --exclude '*.git*'  ~/dev/flow/janet $user@$ip:~/
+    ssh $user@$ip "cd ~/janet;source ~/.profile;export JAVA_HOME=/opt/java-se-8u41-ri;gradle -version;gradle installDist"
 fi
 
