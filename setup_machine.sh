@@ -48,6 +48,24 @@ echo "export PATH=$PATH:/opt/jdk-11/bin" >> ~/.profile
 #echo "export JAVA_HOME=/opt/jdk-11" >> ~/.bashrc
 
 
-function janet() {
-    java -jar ~/janet/build/libs/javaflow-0.0.1.jar $1 0 debug
+echo "function janet() {\
+    java -jar ~/janet/build/libs/javaflow-0.0.1.jar $1 0 debug \
+}" >> ~/.bashrc
+
+
+function gssh() {
+    gcloud compute ssh asaf_avatichi@avatichi-agent-kernel$1
 }
+
+
+function go_app() {
+    cd ~/flow/flowshop/golang_ssl/server
+    go build app.go
+    ./app&
+    cd ../client
+    go build app.go
+    ./app
+}
+
+sudo apt-get install apache2-utils
+# 0xc000043ec8
